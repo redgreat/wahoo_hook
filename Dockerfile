@@ -14,8 +14,13 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt \
+    useradd -m -d /src -s /bin/bash app \
+    && chown -R app:app /src/* && chown -R app:app /src \
+    && chmod +x entrypoints/* \
 
-COPY ./src/app /code/app
+COPY ./app /code
+
+USER app
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
