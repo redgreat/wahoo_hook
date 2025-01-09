@@ -15,7 +15,7 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
-COPY ./app/ /code
+COPY ./app /code/app
 COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
 
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
