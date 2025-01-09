@@ -1,26 +1,31 @@
-FROM python:3.12 as requirements-stage
+FROM python:3.12-alpine as requirements-stage
 
 WORKDIR /tmp
 
-RUN pip install poetry
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
+    && pip install poetry
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes \
+    && apk del .build-deps
 
-FROM python:3.12
+FROM python:3.12-alpine
 
 WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt \
-    useradd -m -d /src -s /bin/bash app \
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
+    && pip install --no-cache-dir --upgrade -r /code/requirements.txt \
+    && apk del .build-deps \
+    && useradd -m -d /src -s /bin/bash app \
     && chown -R app:app /src/* && chown -R app:app /src \
-    && chmod +x entrypoints/* \
+    && chmod +x entrypoints.sh
 
 COPY ./app /code
+COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
 
 USER app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["/code/entrypoints.sh"]
