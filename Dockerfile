@@ -4,8 +4,9 @@ WORKDIR /tmp
 
 RUN apk add --no-cache bash gcc curl libffi-dev musl-dev openssl-dev python3-dev \
     && curl -sSL https://install.python-poetry.org | python3 - \
-    && echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc \
+    && echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc \
     && source ~/.bashrc \
+    && poetry --version
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
