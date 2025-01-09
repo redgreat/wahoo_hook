@@ -5,10 +5,9 @@ WORKDIR /tmp
 RUN apk add --no-cache bash gcc curl libffi-dev musl-dev openssl-dev python3-dev \
     && curl -sSL https://install.python-poetry.org | python3 -
 
-
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes  \
+RUN /root/.local/bin/poetry export -f requirements.txt --output requirements.txt --without-hashes  \
     && apk del .build-deps
 
 FROM python:3.12-alpine
