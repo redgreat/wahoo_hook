@@ -10,7 +10,7 @@ on:
       - 'v*'
 
 env:
-  DOCKER_IMAGE_NAME: redgreat/wahoo_webhook
+  DOCKER_IMAGE_NAME: wahoo_webhook
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
