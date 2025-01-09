@@ -3,7 +3,9 @@ FROM python:3.12-alpine as requirements-stage
 WORKDIR /tmp
 
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
-    && pip install poetry
+    && curl -sSL https://install.python-poetry.org | python3 -
+
+ENV PATH="/root/.local/bin:${PATH}"
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
