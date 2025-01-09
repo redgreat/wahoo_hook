@@ -21,8 +21,8 @@ COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
     && pip install --no-cache-dir --upgrade -r /code/requirements.txt \
     && apk del .build-deps \
-    && useradd -m -d /code/app -s /bin/bash app \
-    && chown -R app:app /code/app/* && chown -R app:app /code/app \
+    && adduser -D -h /code/app app \
+    && chown -R app:app /code/app && chown -R app:app /code/app/* \
     && chmod +x entrypoints.sh
 
 USER app
