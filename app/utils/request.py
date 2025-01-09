@@ -7,7 +7,7 @@ from fastapi import Request
 from starlette.datastructures import State
 
 if TYPE_CHECKING:
-    from app.core import MyApp
+    from app.core import WahooApp
 
 
 class AppState(State):
@@ -15,4 +15,4 @@ class AppState(State):
 
 
 class AppRequest(Request):
-    app: MyApp
+    app: WahooApp

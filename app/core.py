@@ -6,11 +6,11 @@ from fastapi import FastAPI
 from utils.config import AppConfig
 
 description = """
-This app serves as an base template for internal FastAPI apps
+webhook方式接收wahoo锻炼数据并存入数据库
 """
 
 
-class MyApp(FastAPI):
+class WahooApp(FastAPI):
     def __init__(
         self, *, loop: Optional[asyncio.AbstractEventLoop] = None, config: AppConfig
     ):
@@ -18,7 +18,7 @@ class MyApp(FastAPI):
             loop or asyncio.get_event_loop_policy().get_event_loop()
         )
         super().__init__(
-            title="Example Template",
+            title="Wahoo Webhook",
             version="0.1.0",
             description=description,
             loop=self.loop,
