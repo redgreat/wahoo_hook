@@ -1,15 +1,12 @@
-FROM python:3.12-alpine as requirements-stage
+FROM python:3.12 as requirements-stage
 
 WORKDIR /tmp
 
+RUN pip install poetry
+
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
-RUN apk add --no-cache bash gcc curl libffi-dev musl-dev openssl-dev python3-dev \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc \
-    && source ~/.bashrc && pip install poetry-plugin-export \
-    && poetry export -f requirements.txt --output requirements.txt --without-hashes \
-    && apk del .build-deps
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 FROM python:3.12-alpine
 
