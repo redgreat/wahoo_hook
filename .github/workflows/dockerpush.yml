@@ -10,7 +10,7 @@ on:
       - 'v*'
 
 env:
-  DOCKER_IMAGE_NAME: wahoo_webhook
+  DOCKER_IMAGE_NAME: redgreat/wahoo_webhook
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
@@ -64,10 +64,10 @@ jobs:
             LABEL_VERSION=${VERSION:1}
           fi
           # Determine the Docker container tags.
-          TAGS="${{ env.DOCKER_IMAGE_NAME}}:${LABEL_VERSION}"
+          TAGS="${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME}}:${LABEL_VERSION}"
           TAGS="$TAGS,ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:${LABEL_VERSION}"
           if [[ $GITHUB_REF =~ refs/tags/* ]]; then
-            TAGS="$TAGS,${{ env.DOCKER_IMAGE_NAME }}:latest,ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest"
+            TAGS="$TAGS,${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest,ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest"
           fi
           # Print results.
           echo "::group::Results"
@@ -97,6 +97,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: github container registry login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: docker image build & push
         id: docker_build
         uses: docker/build-push-action@v6
@@ -114,7 +121,8 @@ jobs:
       - name: inspect
         if: ${{ steps.prep.outputs.version != 'unknown' }}
         run: |
-          docker buildx imagetools inspect ${{ env.DOCKER_IMAGE_NAME }}:${{ steps.prep.outputs.label_version }}
+          docker buildx imagetools inspect ${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.prep.outputs.label_version }}
+          docker buildx imagetools inspect ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:${{ steps.prep.outputs.label_version }}
 
       - name: dockerhub description
         if: ${{ steps.prep.outputs.version != 'unknown' }}
@@ -122,5 +130,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.DOCKER_IMAGE_NAME }}
+          repository: ${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}
           readme-filepath: README.Docker.md
