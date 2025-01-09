@@ -16,15 +16,15 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
+COPY ./app /code
+COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
+
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
     && pip install --no-cache-dir --upgrade -r /code/requirements.txt \
     && apk del .build-deps \
-    && useradd -m -d /src -s /bin/bash app \
-    && chown -R app:app /src/* && chown -R app:app /src \
+    && useradd -m -d /code/app -s /bin/bash app \
+    && chown -R app:app /code/app/* && chown -R app:app /code/app \
     && chmod +x entrypoints.sh
-
-COPY ./app /code
-COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
 
 USER app
 
