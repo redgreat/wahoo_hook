@@ -7,7 +7,7 @@ services:
         ports:
             - '8080:8090'
         volumes:
-            - ./config.yml:/code/app/config/config.yml
+            - ./config/config.yml:/code/app/config/config.yml
             - ./logs/:/code/app/logs/:rw
         environment:
             DISABLE_IPV6: 'true'
