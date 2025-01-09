@@ -2,10 +2,8 @@ FROM python:3.12-alpine as requirements-stage
 
 WORKDIR /tmp
 
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
-    && curl -sSL https://install.python-poetry.org | python3 -
-
-ENV PATH="/root/.local/bin:${PATH}"
+RUN apk add --no-cache bash gcc libffi-dev musl-dev openssl-dev python3-dev \
+    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
