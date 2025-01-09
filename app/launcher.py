@@ -9,7 +9,7 @@ from routes import router
 from utils.config import AppConfig
 from uvicorn.supervisors import Multiprocess
 
-config_path = Path(__file__).parent / "config.yml"
+config_path = Path(__file__).parent / "config/config.yml"
 config = AppConfig(config_path)
 
 app = WahooApp(config=config)

@@ -14,9 +14,9 @@ asyncpg = "^0.29.0"
 uvicorn = "^0.34.0"
 PyYAML = "^6.0.2"
 garmin-fit-sdk = "^21.158.0"
-requests = "^2.32.3"
-
 aiohttp = "^3.11.11"
+loguru = "^0.7.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
