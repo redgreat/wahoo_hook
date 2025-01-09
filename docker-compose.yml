@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-    eadm:
+    wahoo:
         image: 'redgreat/wahoo_webhook:latest'
         container_name: wahoo
         restart: unless-stopped
