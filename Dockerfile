@@ -7,9 +7,8 @@ COPY ./pyproject.toml ./poetry.lock* /tmp/
 RUN apk add --no-cache bash gcc curl libffi-dev musl-dev openssl-dev python3-dev \
     && curl -sSL https://install.python-poetry.org | python3 - \
     && echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc \
-    && source ~/.bashrc \
-    && poetry --version \
-    && poetry export -f requirements.txt --output requirements.txt --without-hashes  \
+    && source ~/.bashrc && poetry self add poetry-plugin-export \
+    && poetry export -f requirements.txt --output requirements.txt --without-hashes \
     && apk del .build-deps
 
 FROM python:3.12-alpine
