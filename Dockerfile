@@ -3,7 +3,7 @@ FROM python:3.12-alpine as requirements-stage
 WORKDIR /tmp
 
 RUN apk add --no-cache bash gcc curl libffi-dev musl-dev openssl-dev python3-dev \
-    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+    && curl -sSL https://install.python-poetry.org | python3 -
 
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
