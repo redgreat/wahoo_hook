@@ -25,4 +25,4 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
 
 USER app
 
-ENTRYPOINT ["/code/entrypoints.sh"]
+ENTRYPOINT ["entrypoints.sh"]
