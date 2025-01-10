@@ -14,15 +14,14 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 COPY ./app /code/app
-COPY ./entrypoints/entrypoints.sh /code/entrypoints.sh
 
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
     && pip install --no-cache-dir --upgrade -r /code/requirements.txt \
     && apk del .build-deps \
     && adduser -D -h /code/app app \
-    && chown -R app:app /code/app && chown -R app:app /code/app/* \
-    && chmod +x entrypoints.sh
+    && chown -R app:app /code/app  \
+    && chmod 775 -R /code/app/
 
 USER app
 
-ENTRYPOINT ["entrypoints.sh"]
+CMD ["python", "app/launcher.py"]

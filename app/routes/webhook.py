@@ -1,4 +1,8 @@
-from http.client import HTTPException
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+# @author by wangcw @ 2025
+# @generate at 2025-1-10 12:26:29
+# comment: API Routes
 
 from fastapi import APIRouter, HTTPException, status
 from utils.request import AppRequest
@@ -6,25 +10,8 @@ from models.errors import NotFound
 from models.success import Success
 from models.workout import WebhookRequest
 from utils.workout_parser import WorkoutParser
+from http.client import HTTPException
 from loguru import logger
-
-logDir = os.path.expanduser("../logs/")
-if not os.path.exists(logDir):
-    os.mkdir(logDir)
-logFile = os.path.join(logDir, "request.log")
-logger.remove(handler_id=None)
-
-logger.add(
-    logFile,
-    colorize=True,
-    rotation="1 days",
-    retention="3 days",
-    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
-    backtrace=True,
-    diagnose=True,
-    level="INFO",
-)
-
 
 router = APIRouter(prefix="/wahoo", tags=["Users"])
 

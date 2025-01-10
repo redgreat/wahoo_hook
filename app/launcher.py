@@ -8,6 +8,24 @@ from core import WahooApp
 from routes import router
 from utils.config import AppConfig
 from uvicorn.supervisors import Multiprocess
+from loguru import logger
+
+logDir = os.path.expanduser("app/logs/")
+# if not os.path.exists(logDir):
+#     os.mkdir(logDir)
+logFile = os.path.join(logDir, "request.log")
+logger.remove(handler_id=None)
+
+logger.add(
+    logFile,
+    colorize=True,
+    rotation="1 days",
+    retention="3 days",
+    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
+    backtrace=True,
+    diagnose=True,
+    level="INFO",
+)
 
 config_path = Path(__file__).parent / "config/config.yml"
 config = AppConfig(config_path)
