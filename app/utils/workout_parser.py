@@ -76,9 +76,7 @@ class WorkoutParser:
             if file_content is None:
                 print("Failed to download file, skipping parse_fits.")
                 return
-
             file_object = io.BytesIO(file_content)
-
             await self.parse_fits(workout_summary_id, file_object)
         except Exception as e:
             print(f"Error downloading file: {e}")
