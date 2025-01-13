@@ -7,6 +7,7 @@
 import io
 import aiohttp
 from garmin_fit_sdk import Decoder, Stream
+from psycopg2.extras import execute_values
 import asyncpg
 
 ins_workout_fits = """insert into public.workout_fits(workout_summary_id,altitude,distance,
@@ -43,7 +44,7 @@ class WorkoutParser:
 
     async def parse_workout(self, in_workouts):
         try:
-            workout_summary = in_workouts.get('workout_summary')
+            workout_summary = in_workouts.workout_summary
             if workout_summary:
                 await self.parse_workout_summary(workout_summary)
         except Exception as e:
@@ -51,20 +52,20 @@ class WorkoutParser:
 
     async def parse_workout_summary(self, workout_summary):
         try:
-            workout_summary_id = workout_summary.get('id')
-            files = workout_summary.get('file').get('url')
+            workout_summary_id = workout_summary.id
+            files = workout_summary.file.url
             if files:
                 await self.parse_files(workout_summary_id, files)
             await self.insert_db(ins_workout_summary, (
                 workout_summary_id,
-                workout_summary.get('ascent_accum'),
-                workout_summary.get('distance_accum'),
-                workout_summary.get('duration_active_accum'),
-                workout_summary.get('duration_paused_accum'),
-                workout_summary.get('duration_total_accum'),
-                workout_summary.get('speed_avg'),
-                workout_summary.get('created_at'),
-                workout_summary.get('updated_at')
+                workout_summary.ascent_accum,
+                workout_summary.distance_accum,
+                workout_summary.duration_active_accum,
+                workout_summary.duration_paused_accum,
+                workout_summary.duration_total_accum,
+                workout_summary.speed_avg,
+                workout_summary.created_at,
+                workout_summary.updated_at
             ))
         except Exception as e:
             print(f"Error parsing workout summary: {e}")
@@ -75,7 +76,9 @@ class WorkoutParser:
             if file_content is None:
                 print("Failed to download file, skipping parse_fits.")
                 return
+
             file_object = io.BytesIO(file_content)
+
             await self.parse_fits(workout_summary_id, file_object)
         except Exception as e:
             print(f"Error downloading file: {e}")
