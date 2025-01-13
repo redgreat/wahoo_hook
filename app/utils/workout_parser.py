@@ -44,13 +44,15 @@ class WorkoutParser:
 
     async def parse_workout(self, in_workouts):
         try:
+            starts = datetime.fromisoformat(in_workouts.get('starts').replace('Z', '+00:00'))
+            minutes = int(float(in_workouts.get('minutes', 0) or 0))
             workout_summary = in_workouts.get('workout_summary')
             if workout_summary:
-                await self.parse_workout_summary(workout_summary)
+                await self.parse_workout_summary(workout_summary, starts, minutes)
         except Exception as e:
             print(f"Error parsing workout: {e}")
 
-    async def parse_workout_summary(self, workout_summary):
+    async def parse_workout_summary(self, workout_summary, starts, minutes):
         try:
             workout_summary_id = workout_summary.get('id')
             files = workout_summary.get('file').get('url')
@@ -59,16 +61,17 @@ class WorkoutParser:
 
             created_at = datetime.fromisoformat(workout_summary.get('created_at').replace('Z', '+00:00'))
             updated_at = datetime.fromisoformat(workout_summary.get('updated_at').replace('Z', '+00:00'))
-
-            ascent_accum = int(float(workout_summary.get('ascent_accum', 0)))
-            distance_accum = int(float(workout_summary.get('distance_accum', 0)))
-            duration_active_accum = int(float(workout_summary.get('duration_active_accum', 0)))
-            duration_paused_accum = int(float(workout_summary.get('duration_paused_accum', 0)))
-            duration_total_accum = int(float(workout_summary.get('duration_total_accum', 0)))
-            speed_avg = int(float(workout_summary.get('speed_avg', 0)))
+            ascent_accum = int(float(workout_summary.get('ascent_accum', 0) or 0))
+            distance_accum = int(float(workout_summary.get('distance_accum', 0) or 0))
+            duration_active_accum = int(float(workout_summary.get('duration_active_accum', 0) or 0))
+            duration_paused_accum = int(float(workout_summary.get('duration_paused_accum', 0) or 0))
+            duration_total_accum = int(float(workout_summary.get('duration_total_accum', 0) or 0))
+            speed_avg = int(float(workout_summary.get('speed_avg', 0) or 0))
 
             await self.insert_db(ins_workout_summary, (
                 workout_summary_id,
+                starts,
+                minutes,
                 ascent_accum,
                 distance_accum,
                 duration_active_accum,
@@ -110,8 +113,6 @@ class WorkoutParser:
                              record_fit.get('battery_soc'), record_fit.get('timestamp'))
                             for record_fit in record_message
                         ]
-                        # print("ins_values:", ins_values)
-                        # await execute_values(con.cursor(), ins_workout_fits, ins_values, page_size=1000)
                         await con.copy_records_to_table('workout_fits', records=ins_values, columns=[
                             'workout_summary_id', 'altitude', 'distance', 'enhanced_altitude', 'enhanced_speed',
                             'gps_accuracy', 'grade', 'position_lat', 'position_long', 'speed', 'temperature',
