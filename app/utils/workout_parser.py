@@ -7,7 +7,6 @@
 import io
 import aiohttp
 from garmin_fit_sdk import Decoder, Stream
-from psycopg2.extras import execute_values
 import asyncpg
 
 ins_workout_fits = """insert into public.workout_fits(workout_summary_id,altitude,distance,

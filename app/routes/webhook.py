@@ -5,10 +5,8 @@
 # comment: API Routes
 
 from fastapi import APIRouter, HTTPException, status, Request
-from utils.request import AppRequest
 from models.errors import NotFound
 from models.success import Success
-from models.workout import WebhookRequest
 from utils.workout_parser import WorkoutParser
 from http.client import HTTPException
 from loguru import logger
@@ -22,8 +20,8 @@ router = APIRouter(prefix="/wahoo", tags=["Users"])
     responses={404: {"model": NotFound}},
     name="Wenhook CallBack",
 )
-async def save_workouts(request: AppRequest, webhook_request: Request):
-    body = await webhook_request.json()
+async def save_workouts(request: Request):
+    body = await request.json()
     logger.info(f"webhook_request_body: {body}")
     if body.get('webhook_token') != request.app.config._config["webhook_token"]:
         raise HTTPException(
