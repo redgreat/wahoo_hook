@@ -8,6 +8,7 @@ import io
 import aiohttp
 from garmin_fit_sdk import Decoder, Stream
 import asyncpg
+from datetime import datetime
 
 ins_workout_fits = """insert into public.workout_fits(workout_summary_id,altitude,distance,
                     enhanced_altitude,enhanced_speed,gps_accuracy,grade,position_lat,position_long,speed,
@@ -55,16 +56,27 @@ class WorkoutParser:
             files = workout_summary.get('file').get('url')
             if files:
                 await self.parse_files(workout_summary_id, files)
+
+            created_at = datetime.fromisoformat(workout_summary.get('created_at').replace('Z', '+00:00'))
+            updated_at = datetime.fromisoformat(workout_summary.get('updated_at').replace('Z', '+00:00'))
+
+            ascent_accum = int(float(workout_summary.get('ascent_accum', 0)))
+            distance_accum = int(float(workout_summary.get('distance_accum', 0)))
+            duration_active_accum = int(float(workout_summary.get('duration_active_accum', 0)))
+            duration_paused_accum = int(float(workout_summary.get('duration_paused_accum', 0)))
+            duration_total_accum = int(float(workout_summary.get('duration_total_accum', 0)))
+            speed_avg = int(float(workout_summary.get('speed_avg', 0)))
+
             await self.insert_db(ins_workout_summary, (
                 workout_summary_id,
-                workout_summary.get('ascent_accum'),
-                workout_summary.get('distance_accum'),
-                workout_summary.get('duration_active_accum'),
-                workout_summary.get('duration_paused_accum'),
-                workout_summary.get('duration_total_accum'),
-                workout_summary.get('speed_avg'),
-                workout_summary.get('created_at'),
-                workout_summary.get('updated_at')
+                ascent_accum,
+                distance_accum,
+                duration_active_accum,
+                duration_paused_accum,
+                duration_total_accum,
+                speed_avg,
+                created_at,
+                updated_at
             ))
         except Exception as e:
             print(f"Error parsing workout summary: {e}")
