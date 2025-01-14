@@ -17,10 +17,12 @@ ins_workout_fits = """insert into public.workout_fits(workout_summary_id,altitud
 
 del_workout_fits = "delete from public.workout_fits where workout_summary_id = $1;"
 
-ins_workout_summary = ("insert into public.workout_summary(id,ascent_accum,distance_accum,"
+ins_workout_summary = ("insert into public.workout_summary(id,starts,minutes,ascent_accum,distance_accum,"
                        "duration_active_accum,duration_paused_accum,duration_total_accum,speed_avg,"
-                       "created_at,updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9) "
-                       "on conflict (id) do update set ascent_accum=excluded.ascent_accum,"
+                       "created_at,updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) "
+                       "on conflict (id) do update set starts=excluded.starts,"
+                       "minutes=excluded.minutes,"
+                       "ascent_accum=excluded.ascent_accum,"
                        "distance_accum=excluded.distance_accum,"
                        "duration_active_accum=excluded.duration_active_accum,"
                        "duration_paused_accum=excluded.duration_paused_accum,"
