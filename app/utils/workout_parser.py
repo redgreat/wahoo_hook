@@ -55,8 +55,9 @@ class WorkoutParser:
 
     async def parse_workout(self, in_workouts):
         try:
-            starts = await iso_formater(in_workouts.get('starts', ''))
-            minutes = int(float(in_workouts.get('minutes', 0) or 0))
+            workouts = in_workouts.get('workout', '')
+            starts = await iso_formater(workouts.get('starts', ''))
+            minutes = int(float(workouts.get('minutes', 0) or 0))
             workout_summary = in_workouts.get('workout_summary')
             if workout_summary:
                 await self.parse_workout_summary(workout_summary, starts, minutes)
