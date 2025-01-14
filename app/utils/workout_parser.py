@@ -44,7 +44,7 @@ class WorkoutParser:
 
     async def parse_workout(self, in_workouts):
         try:
-            starts = datetime.fromisoformat(in_workouts.get('starts').replace('Z', '+00:00'))
+            starts = datetime.fromisoformat(in_workouts.get('starts', '').replace('Z', '+00:00'))
             minutes = int(float(in_workouts.get('minutes', 0) or 0))
             workout_summary = in_workouts.get('workout_summary')
             if workout_summary:
