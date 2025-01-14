@@ -38,13 +38,22 @@ async def fetch_file(file_url):
                 return None
 
 
+async def iso_formater(date_str):
+    if not date_str:
+        return None
+    try:
+        return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+    except ValueError:
+        return None
+
+
 class WorkoutParser:
     def __init__(self, pool: asyncpg.Pool):
         self.pool = pool
 
     async def parse_workout(self, in_workouts):
         try:
-            starts = datetime.fromisoformat(in_workouts.get('starts', '').replace('Z', '+00:00'))
+            starts = iso_formater(in_workouts.get('starts', ''))
             minutes = int(float(in_workouts.get('minutes', 0) or 0))
             workout_summary = in_workouts.get('workout_summary')
             if workout_summary:
@@ -59,8 +68,8 @@ class WorkoutParser:
             if files:
                 await self.parse_files(workout_summary_id, files)
 
-            created_at = datetime.fromisoformat(workout_summary.get('created_at').replace('Z', '+00:00'))
-            updated_at = datetime.fromisoformat(workout_summary.get('updated_at').replace('Z', '+00:00'))
+            created_at = iso_formater(workout_summary.get('created_at'))
+            updated_at = iso_formater(workout_summary.get('updated_at'))
             ascent_accum = int(float(workout_summary.get('ascent_accum', 0) or 0))
             distance_accum = int(float(workout_summary.get('distance_accum', 0) or 0))
             duration_active_accum = int(float(workout_summary.get('duration_active_accum', 0) or 0))
