@@ -17,10 +17,11 @@ ins_workout_fits = """insert into public.workout_fits(workout_summary_id,altitud
 
 del_workout_fits = "delete from public.workout_fits where workout_summary_id = $1;"
 
-ins_workout_summary = ("insert into public.workout_summary(id,starts,minutes,ascent_accum,distance_accum,"
+ins_workout_summary = ("insert into public.workout_summary(id,workout_id,starts,minutes,ascent_accum,distance_accum,"
                        "duration_active_accum,duration_paused_accum,duration_total_accum,speed_avg,"
-                       "created_at,updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) "
-                       "on conflict (id) do update set starts=excluded.starts,"
+                       "created_at,updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) "
+                       "on conflict (id) do update set workout_id=excluded.workout_id,"
+                       "starts=excluded.starts,"
                        "minutes=excluded.minutes,"
                        "ascent_accum=excluded.ascent_accum,"
                        "distance_accum=excluded.distance_accum,"
@@ -55,18 +56,19 @@ class WorkoutParser:
 
     async def parse_workout(self, in_workouts):
         try:
-            workouts = in_workouts.get('workout', '')
-            starts = await iso_formater(workouts.get('starts', ''))
-            minutes = int(float(workouts.get('minutes', 0) or 0))
             workout_summary = in_workouts.get('workout_summary')
             if workout_summary:
-                await self.parse_workout_summary(workout_summary, starts, minutes)
+                await self.parse_workout_summary(workout_summary)
         except Exception as e:
             print(f"Error parsing workout: {e}")
 
-    async def parse_workout_summary(self, workout_summary, starts, minutes):
+    async def parse_workout_summary(self, workout_summary):
         try:
             workout_summary_id = workout_summary.get('id')
+            workouts = workout_summary.get('workout', '')
+            workout_id = workouts.get('id')
+            starts = await iso_formater(workouts.get('starts', ''))
+            minutes = int(float(workouts.get('minutes', 0) or 0))
             files = workout_summary.get('file').get('url')
             if files:
                 await self.parse_files(workout_summary_id, files)
@@ -82,6 +84,7 @@ class WorkoutParser:
 
             await self.insert_db(ins_workout_summary, (
                 workout_summary_id,
+                workout_id,
                 starts,
                 minutes,
                 ascent_accum,
