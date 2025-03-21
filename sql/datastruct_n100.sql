@@ -4,7 +4,7 @@
 -- postgres表结构设计
 
 -- 设置查询路径
-alter role wangcw set search_path to wangcw, public;
+alter role user_eadm set search_path to eadm, public;
 
 --设置 本地时区
 set time zone 'asia/shanghai';
@@ -26,7 +26,7 @@ create table workout_summary (
   updated_at timestamptz
 );
 
-alter table workout_summary owner to wangcw;
+alter table workout_summary owner to user_eadm;
 alter table workout_summary drop constraint if exists pk_workout_summary_id cascade;
 alter table workout_summary add constraint pk_workout_summary_id primary key (id);
 
@@ -63,7 +63,7 @@ create table workout_fits (
   created_at timestamptz
 );
 
-alter table workout_fits owner to wangcw;
+alter table workout_fits owner to user_eadm;
 alter table workout_fits drop constraint if exists pk_workout_fits_id cascade;
 alter table workout_fits add constraint pk_workout_fits_id primary key (id);
 
@@ -82,3 +82,43 @@ comment on column workout_fits.temperature is '温度(℃)';
 comment on column workout_fits.battery_soc is '电池电量(%)';
 comment on column workout_fits.created_at is '上传时间';
 comment on table workout_fits is '健康详细信息表';
+
+-- 健康信息导入记录
+drop table if exists workout_imps cascade;
+create table workout_imps (
+  id serial,
+  file_name varchar(100),
+  insert_time timestamptz
+);
+
+alter table workout_imps owner to user_eadm;
+alter table workout_imps drop constraint if exists pk_workout_imps_id cascade;
+alter table workout_imps add constraint pk_workout_imps_id primary key (id);
+
+comment on column workout_imps.id is '自增主键';
+comment on column workout_imps.file_name is '文件名称';
+comment on column workout_imps.insert_time is '数据写入时间';
+comment on table workout_imps is '健康信息导入记录';
+
+-- 健康信息表
+drop table if exists workout_info cascade;
+create table workout_info (
+  id serial,
+  starts timestamptz,
+  minutes int,
+  workout_type_id smallint,
+  created_at timestamptz,
+  updated_at timestamptz
+);
+
+alter table workout_info owner to user_eadm;
+alter table workout_info drop constraint if exists pk_workout_info_id cascade;
+alter table workout_info add constraint pk_workout_info_id primary key (id);
+
+comment on column workout_info.id is '自增主键';
+comment on column workout_info.starts is '开始时间';
+comment on column workout_info.minutes is '持续时长';
+comment on column workout_info.workout_type_id is '锻炼数据类型Id';
+comment on column workout_info.created_at is '创建时间';
+comment on column workout_info.updated_at is '更新时间';
+comment on table workout_info is '健康信息表';
